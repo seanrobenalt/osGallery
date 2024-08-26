@@ -112,7 +112,7 @@ function Main() {
         { paddingBottom: insets.bottom, paddingTop: insets.top },
       ]}
     >
-      <View style={styles.mainContent}>
+      <View>
         <View style={styles.chainContainer}>
           <Text style={styles.chainName}>
             {getChainName()}{" "}

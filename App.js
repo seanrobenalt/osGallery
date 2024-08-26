@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { Image, Platform, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as ExpoWalletsdk from "expo-walletsdk";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Main from "./components/Main";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Info from "./components/Info";
 
 export default function App() {
   if (Platform.OS === "ios") {
@@ -43,8 +44,19 @@ export default function App() {
                     style={{ width: 30, height: 30, marginTop: 10 }}
                   />
                 ),
-                tabBarLabel: "",
                 headerShown: false,
+              }}
+            />
+            <Tab.Screen
+              name="Info"
+              component={Info}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Image
+                    source={require("./assets/crt-bsod.png")}
+                    style={{ width: 30, height: 30, marginTop: 10 }}
+                  />
+                ),
               }}
             />
           </Tab.Navigator>
@@ -53,3 +65,12 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
