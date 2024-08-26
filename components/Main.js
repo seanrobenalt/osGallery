@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { CHAINBASE_API_KEY } from "@env";
 
 function Main() {
   const insets = useSafeAreaInsets();
@@ -27,7 +28,7 @@ function Main() {
         `https://api.chainbase.online/v1/account/nfts?chain_id=${chain}&limit=100&address=${ExpoWalletsdk.getAddress()}`,
         {
           method: "GET",
-          headers: { "x-api-key": process.env.CHAINBASE_API_KEY },
+          headers: { "x-api-key": CHAINBASE_API_KEY },
         }
       )
         .then((response) => response.json())
