@@ -55,7 +55,7 @@ const ChainSelect = React.forwardRef(({ chain, onSubmit }, ref) => {
       enablePanDownToClose
     >
       <BottomSheetView style={styles.contentContainer}>
-        <Text style={styles.title}>Select chain</Text>
+        <Text style={styles.title}>Select Chain</Text>
 
         <FlatList
           data={Object.keys(CHAINS)}

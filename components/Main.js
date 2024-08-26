@@ -16,12 +16,15 @@ import {
 } from "react-native-safe-area-context";
 import { CHAINBASE_API_KEY } from "@env";
 import ChainSelect, { CHAINS } from "./organisms/ChainSelect";
+import NftBottomSheet from "./organisms/NftBottomSheet";
 
 function Main() {
   const insets = useSafeAreaInsets();
   const sheetRef = useRef(null);
+  const nftSheetRef = useRef(null);
 
   const [nfts, setNfts] = useState();
+  const [selectedNft, setSelectedNft] = useState();
   const [chain, setChain] = useState(1);
   const numColumns = 3;
 
@@ -63,12 +66,24 @@ function Main() {
     }
   }, []);
 
+  const handleNftSelect = (item) => {
+    setSelectedNft(item);
+
+    if (nftSheetRef.current) {
+      nftSheetRef.current.openSheet();
+    }
+  };
+
   const renderItem = useCallback(({ item }) => {
     let uri = item.image_uri.startsWith("ipfs://")
       ? item.image_uri.replace("ipfs://", "https://ipfs.io/ipfs/")
       : item.image_uri;
 
-    return <Image source={{ uri }} style={styles.image} />;
+    return (
+      <TouchableOpacity onPress={() => handleNftSelect(item)}>
+        <Image source={{ uri }} style={styles.image} />
+      </TouchableOpacity>
+    );
   }, []);
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -104,7 +119,7 @@ function Main() {
             {nfts && <Text style={styles.nftCount}>{nfts.length} NFT(s)</Text>}
           </Text>
           <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
-            <Text style={styles.editButtonText}>Edit Chain</Text>
+            <Text style={styles.editButtonText}>Select Chain</Text>
           </TouchableOpacity>
         </View>
 
@@ -129,6 +144,8 @@ function Main() {
                   removeClippedSubviews={true}
                 />
               )}
+
+              <NftBottomSheet ref={nftSheetRef} item={selectedNft} />
 
               <ChainSelect
                 ref={sheetRef}

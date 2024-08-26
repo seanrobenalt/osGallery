@@ -44,6 +44,7 @@ export default function App() {
                   />
                 ),
                 tabBarLabel: "",
+                headerShown: false,
               }}
             />
           </Tab.Navigator>
