@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import * as ExpoWalletsdk from "expo-walletsdk";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -22,10 +22,12 @@ function Main() {
   const [chain, setChain] = useState(1);
   const numColumns = 3;
 
+  const address = ExpoWalletsdk.getAddress();
+
   useEffect(() => {
     const fetchNfts = async () => {
       fetch(
-        `https://api.chainbase.online/v1/account/nfts?chain_id=${chain}&limit=100&address=${ExpoWalletsdk.getAddress()}`,
+        `https://api.chainbase.online/v1/account/nfts?chain_id=${chain}&limit=100&address=${address}`,
         {
           method: "GET",
           headers: { "x-api-key": CHAINBASE_API_KEY },
@@ -41,13 +43,21 @@ function Main() {
     }
   }, []);
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     let uri = item.image_uri.startsWith("ipfs://")
       ? item.image_uri.replace("ipfs://", "https://ipfs.io/ipfs/")
       : item.image_uri;
 
     return <Image source={{ uri }} style={styles.image} />;
-  };
+  }, []);
+
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const deviceWidth = Dimensions.get("window").width;
+  const deviceHeight = Dimensions.get("window").height;
+  const itemSize = deviceWidth / numColumns;
+  const numRowsPerScreen = Math.floor(deviceHeight / itemSize);
+  const initialRenderCount = numRowsPerScreen * numColumns;
 
   return (
     <SafeAreaView
@@ -62,9 +72,16 @@ function Main() {
             <FlatList
               data={nfts}
               renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={keyExtractor}
               numColumns={numColumns}
               key={numColumns}
+              initialNumToRender={Math.min(initialRenderCount, nfts.length)}
+              windowSize={Math.min(
+                5,
+                Math.ceil(nfts.length / initialRenderCount)
+              )}
+              maxToRenderPerBatch={numColumns}
+              removeClippedSubviews={true}
             />
           ) : (
             <Text>Loading NFTs</Text>
