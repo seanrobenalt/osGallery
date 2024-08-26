@@ -6,11 +6,17 @@ import { FlatList } from "react-native-gesture-handler";
 export const CHAINS = {
   Ethereum: 1,
   Polygon: 137,
-  BSC: 56,
-  Avalanche: 43114,
   Arbitrum: 42161,
   Optimism: 10,
   Base: 8453,
+};
+
+export const CHAIN_URLS = {
+  1: "https://eth-mainnet.g.alchemy.com/nft/v3",
+  137: "https://polygon-mainnet.g.alchemy.com/nft/v3",
+  42161: "https://arb-mainnet.g.alchemy.com/nft/v3",
+  10: "https://opt-mainnet.g.alchemy.com/nft/v3",
+  8453: "https://base-mainnet.g.alchemy.com/nft/v3",
 };
 
 const ChainSelect = React.forwardRef(({ chain, onSubmit }, ref) => {

@@ -9,6 +9,11 @@ import {
   Linking,
 } from "react-native";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  extractDescriptionFromItem,
+  extractNameFromItem,
+  extractUrlFromItem,
+} from "../../utils";
 
 const NftBottomSheet = React.forwardRef(({ item }, ref) => {
   const sheetRef = useRef(null);
@@ -19,6 +24,12 @@ const NftBottomSheet = React.forwardRef(({ item }, ref) => {
     },
   }));
 
+  if (!item) {
+    return null;
+  }
+
+  const uri = extractUrlFromItem(item);
+
   return (
     <BottomSheet
       ref={sheetRef}
@@ -28,41 +39,41 @@ const NftBottomSheet = React.forwardRef(({ item }, ref) => {
       enablePanDownToClose
     >
       <BottomSheetView style={styles.contentContainer}>
-        {item && (
-          <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            {item.image_uri && (
-              <Image
-                source={{
-                  uri: item.image_uri.replace(
-                    "ipfs://",
-                    "https://ipfs.io/ipfs/"
-                  ),
-                }}
-                style={styles.image}
-              />
-            )}
-            <Text style={styles.title}>{item.metadata?.name}</Text>
-            <Text style={styles.description}>{item.metadata?.description}</Text>
-            {item.floor_prices && item.floor_prices[0] && (
-              <Text style={styles.description}>
-                Collection Floor: {item.floor_prices[0].value}{" "}
-                {item.floor_prices[0].symbol}
-              </Text>
-            )}
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          {uri && (
+            <Image
+              source={{
+                uri,
+              }}
+              style={styles.image}
+            />
+          )}
+          <Text style={styles.title}>{extractNameFromItem(item)}</Text>
+          <Text style={styles.description}>
+            {extractDescriptionFromItem(item)}
+          </Text>
 
-            <View style={styles.linkContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  Linking.openURL(
-                    `https://opensea.io/assets/${item.contract_address}/${item.token_id}`
-                  );
-                }}
-              >
-                <Text style={styles.link}>View on OpenSea</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        )}
+          {item.contract.openSeaMetadata.floorPrice &&
+          item.contract.openSeaMetadata.floorPrice > 0 ? (
+            <Text style={styles.description}>
+              Collection Floor: {item.contract.openSeaMetadata.floorPrice}
+            </Text>
+          ) : (
+            <></>
+          )}
+
+          <View style={styles.linkContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  `https://opensea.io/assets/${item.contract?.address}/${item.tokenId}`
+                );
+              }}
+            >
+              <Text style={styles.link}>View on OpenSea</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </BottomSheetView>
     </BottomSheet>
   );

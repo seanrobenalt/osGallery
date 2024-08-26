@@ -14,9 +14,10 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { CHAINBASE_API_KEY } from "@env";
-import ChainSelect, { CHAINS } from "./organisms/ChainSelect";
+import { ALCHEMY_API_KEY } from "@env";
+import ChainSelect, { CHAIN_URLS, CHAINS } from "./organisms/ChainSelect";
 import NftBottomSheet from "./organisms/NftBottomSheet";
+import { extractUrlFromItem } from "../utils";
 
 function Main() {
   const insets = useSafeAreaInsets();
@@ -38,21 +39,20 @@ function Main() {
 
   const fetchNfts = async (chainId = null) => {
     const chainParam = chainId || chain;
-    fetch(
-      `https://api.chainbase.online/v1/account/nfts?chain_id=${chainParam}&limit=100&address=${address}`,
-      {
-        method: "GET",
-        headers: { "x-api-key": CHAINBASE_API_KEY },
-      }
-    )
+    const baseUrl = CHAIN_URLS[chainParam];
+
+    const url = `${baseUrl}/${ALCHEMY_API_KEY}/getNFTsForOwner?owner=${address}&withMetadata=true&pageSize=100`;
+
+    fetch(url, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    })
       .then((response) => response.json())
       .then((response) => {
-        if (response.data) {
-          setNfts(
-            response.data.filter(
-              (nft) => nft.image_uri && nft.image_uri.length > 0
-            )
-          );
+        if (response.ownedNfts) {
+          setNfts(response.ownedNfts);
         } else {
           setNfts([]);
         }
@@ -75,13 +75,14 @@ function Main() {
   };
 
   const renderItem = useCallback(({ item }) => {
-    let uri = item.image_uri.startsWith("ipfs://")
-      ? item.image_uri.replace("ipfs://", "https://ipfs.io/ipfs/")
-      : item.image_uri;
+    const uri = extractUrlFromItem(item);
 
+    if (!uri) {
+      return null;
+    }
     return (
       <TouchableOpacity onPress={() => handleNftSelect(item)}>
-        <Image source={{ uri }} style={styles.image} />
+        <Image source={{ uri }} style={styles.image} resizeMode="cover" />
       </TouchableOpacity>
     );
   }, []);

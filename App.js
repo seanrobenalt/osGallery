@@ -41,7 +41,7 @@ export default function App() {
                 tabBarIcon: ({ color, size }) => (
                   <Image
                     source={require("./assets/nounish.png")}
-                    style={{ width: 30, height: 30, marginTop: 10 }}
+                    style={{ width: 40, height: 40, marginTop: 10 }}
                   />
                 ),
                 headerShown: false,
@@ -54,7 +54,7 @@ export default function App() {
                 tabBarIcon: ({ color, size }) => (
                   <Image
                     source={require("./assets/crt-bsod.png")}
-                    style={{ width: 30, height: 30, marginTop: 10 }}
+                    style={{ width: 40, height: 40, marginTop: 10 }}
                   />
                 ),
               }}
