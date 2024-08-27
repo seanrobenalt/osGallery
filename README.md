@@ -2,6 +2,8 @@
 
 Android app for [Ethereum OS](https://www.ethosmobile.org/) devices to view the NFT's in the system-level wallet.
 
+Check out a screen recording of the app on an Android device running ethOS [here](https://youtube.com/shorts/VfMgxOfwu_E?feature=share)
+
 #### Running the App
 
 You'll need a development build installed on an Android. You can generate one in your own [Expo](https://expo.dev) account with `npm run build:dev`. Install it on your Android device or emulator.
