@@ -37,27 +37,41 @@ function Main() {
 
   const address = ExpoWalletsdk.getAddress();
 
-  const fetchNfts = async (chainId = null) => {
+  // with pagination, this gets rate limited if not on paid tier and more than a few 100 NFTs
+  const fetchNfts = async (
+    chainId = null,
+    pageKey = null,
+    accumulatedNfts = []
+  ) => {
     const chainParam = chainId || chain;
     const baseUrl = CHAIN_URLS[chainParam];
 
-    const url = `${baseUrl}/${ALCHEMY_API_KEY}/getNFTsForOwner?owner=${address}&withMetadata=true&pageSize=100`;
+    let url = `${baseUrl}/${ALCHEMY_API_KEY}/getNFTsForOwner?owner=${address}&withMetadata=true&pageSize=100`;
+    if (pageKey) {
+      url += `&pageKey=${pageKey}`;
+    }
 
-    fetch(url, {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response.ownedNfts) {
-          setNfts(response.ownedNfts);
-        } else {
-          setNfts([]);
-        }
-      })
-      .catch((err) => console.error(err));
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      const allNfts = [...accumulatedNfts, ...(data.ownedNfts || [])];
+
+      if (data.pageKey) {
+        return fetchNfts(chainId, data.pageKey, allNfts);
+      } else {
+        setNfts(allNfts);
+      }
+    } catch (err) {
+      console.error(err);
+      setNfts([]);
+    }
   };
 
   useEffect(() => {
