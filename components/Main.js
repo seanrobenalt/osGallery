@@ -37,7 +37,6 @@ function Main() {
 
   const address = ExpoWalletsdk.getAddress();
 
-  // with pagination, this gets rate limited if not on paid tier and more than a few 100 NFTs
   const fetchNfts = async (
     chainId = null,
     pageKey = null,
